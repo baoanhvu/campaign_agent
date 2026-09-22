@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketing Dashboard — Campaign Lending</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div id="app-root">
+    <nav class="top-nav">
+      <button class="nav-btn active" data-page="dashboard" onclick="switchPage('dashboard')">Dashboard</button>
+      <button class="nav-btn" data-page="chat" onclick="switchPage('chat')">Hỏi đáp</button>
+    </nav>
+    <div id="page-dashboard"></div>
+    <div id="page-chat" style="display:none;"></div>
+  </div>
+
+  <script>
+    async function switchPage(page) {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+      document.getElementById('page-dashboard').style.display = page === 'dashboard' ? '' : 'none';
+      document.getElementById('page-chat').style.display = page === 'chat' ? '' : 'none';
+
+      if (page === 'dashboard' && !document.getElementById('page-dashboard').innerHTML) {
+        const resp = await fetch('/dashboard-page');
+        document.getElementById('page-dashboard').innerHTML = await resp.text();
+      }
+      if (page === 'chat' && !document.getElementById('page-chat').innerHTML) {
+        const resp = await fetch('/chat-page');
+        document.getElementById('page-chat').innerHTML = await resp.text();
+      }
+    }
+
+    (async () => {
+      const resp = await fetch('/dashboard-page');
+      document.getElementById('page-dashboard').innerHTML = await resp.text();
+    })();
+  </script>
+</body>
+</html>

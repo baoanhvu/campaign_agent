@@ -1,0 +1,27 @@
+# --- AgentBase SDK ---
+greennode-agentbase
+
+# --- Web ---
+fastapi
+uvicorn[standard]
+jinja2
+sse-starlette
+
+# --- LLM ---
+openai
+python-dotenv
+
+# --- Database ---
+sqlalchemy>=2.0
+psycopg[binary]
+
+# --- ETL ---
+pandas
+openpyxl
+
+# --- Config ---
+pydantic-settings
+pyyaml
+
+# --- Caching ---
+cachetools

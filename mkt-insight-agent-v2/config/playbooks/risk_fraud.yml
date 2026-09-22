@@ -1,0 +1,10 @@
+# config/playbooks/risk_fraud.yml
+title: "Rủi ro và bất thường"
+narrator_prompt: "narrate_campaign"
+metrics:
+  - { name: approved_count }
+  - { name: disbursed_count }
+  - { name: approval_rate }
+  - { name: cpl }
+  - { name: cpa }
+charts: []

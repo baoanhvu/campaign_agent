@@ -1,0 +1,78 @@
+# config/semantic/entities.yml — 4 datasets, 25 dimensions
+
+version: "1.0.0"
+
+datasets:
+  - name: fact_loan
+    schema: raw
+    description: "Bảng fact — hồ sơ vay. KHÔNG có campaign_id/lead_id. Cầu nối: sub_channel."
+    columns:
+      - loan_id
+      - customer_id
+      - sub_channel
+      - status
+      - loan_amount
+      - tenure
+      - rate
+      - balance
+      - date
+      - reason_level_1
+      - reason_level_2
+
+  - name: dim_campaign
+    schema: raw
+    description: "Chiến dịch marketing"
+    columns:
+      - campaign_id
+      - campaign_name
+      - channel
+      - sub_channel
+      - start_date
+      - end_date
+      - budget
+
+  - name: dim_customer
+    schema: raw
+    description: "Khách hàng"
+    columns:
+      - customer_id
+      - segment_name
+      - clv
+      - loan_count
+      - is_active
+
+  - name: dim_product
+    schema: raw
+    description: "Sản phẩm vay"
+    columns:
+      - product_id
+      - product_name
+      - category
+
+dimensions:
+  - {name: campaign_name, dataset: dim_campaign, type: string, pattern: "CMP-\\d+"}
+  - {name: channel, dataset: dim_campaign, type: string}
+  - {name: sub_channel, dataset: dim_campaign, type: string}
+  - {name: campaign_id, dataset: dim_campaign, type: id, pattern: "CMP-\\d+"}
+  - {name: customer_id, dataset: dim_customer, type: id, pattern: "CUS-\\d+"}
+  - {name: segment_name, dataset: dim_customer, type: string}
+  - {name: product_name, dataset: dim_product, type: string}
+  - {name: product_id, dataset: dim_product, type: id, pattern: "PRD-\\d+"}
+  - {name: status, dataset: fact_loan, type: enum, values: [PENDING, APPROVED, REJECTED, DISBURSED]}
+  - {name: reason_level_1, dataset: fact_loan, type: string}
+  - {name: reason_level_2, dataset: fact_loan, type: string}
+  - {name: loan_id, dataset: fact_loan, type: id, pattern: "LEAD-\\d+"}
+  - {name: date, dataset: fact_loan, type: date}
+  - {name: loan_amount, dataset: fact_loan, type: numeric}
+  - {name: tenure, dataset: fact_loan, type: numeric}
+  - {name: rate, dataset: fact_loan, type: numeric}
+  - {name: balance, dataset: fact_loan, type: numeric}
+  - {name: clv, dataset: dim_customer, type: numeric}
+  - {name: loan_count, dataset: dim_customer, type: numeric}
+  - {name: is_active, dataset: dim_customer, type: boolean}
+  - {name: channel_type, dataset: dim_campaign, type: string}
+  - {name: budget, dataset: dim_campaign, type: numeric}
+  - {name: start_date, dataset: dim_campaign, type: date}
+  - {name: end_date, dataset: dim_campaign, type: date}
+  - {name: category, dataset: dim_product, type: string}
+  - {name: region, dataset: dim_customer, type: string}

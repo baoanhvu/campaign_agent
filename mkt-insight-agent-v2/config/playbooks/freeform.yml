@@ -1,0 +1,19 @@
+# config/playbooks/freeform.yml
+title: "Câu hỏi tự do"
+narrator_prompt: "narrate_campaign"
+metrics:
+  - { name: reach_count }
+  - { name: registered_count }
+  - { name: approved_count }
+  - { name: disbursed_count }
+  - { name: disbursed_amount }
+  - { name: cpl }
+  - { name: cpa }
+  - { name: cac }
+  - { name: approval_rate }
+  - { name: avg_loan_value }
+  - { name: comparison_reach }
+  - { name: comparison_disbursed }
+  - { name: comparison_cpl }
+  - { name: comparison_approval }
+charts: []

@@ -1,0 +1,68 @@
+# config/verify.yaml — thresholds for anti-hallucination layers (loosened for POC)
+
+version: "1.0.0"
+
+weights:
+  schema: 0.15      # L0 (deterministic)
+  numeric: 0.30     # L2 (deterministic, most important — increased weight)
+  entity: 0.05      # L3 (WARN only — decreased weight)
+  stats: 0.10       # L4 (WARN only — decreased weight)
+  judge: 0.25       # L5 (LLM — BLOCK contradiction only)
+  consistency: 0.15 # self-consistency (freeform only)
+
+thresholds:
+  t_high: 0.70      # PASS — lowered for POC (was 0.85)
+  t_low: 0.40       # HEDGE — lowered for POC (was 0.60)
+
+alpha: 0.05
+min_effect_size: 0.2
+min_sample_size: 30
+max_regen_attempts: 2
+
+numeric:
+  policy:
+    default: { mode: round, decimals: 2 }
+    vnd: { mode: rel_tol, tol: 0.02 }
+    ratio: { mode: round, decimals: 4 }
+    percent: { mode: round, decimals: 1, alias: [ratio_x100] }
+    count: { mode: exact }
+  allowlist:
+    years: { min: 2000, max: 2100 }
+    ordinals: { min: 1, max: 10 }
+    literals: [0, 1, 2, 100]
+    percentages: [95, 90, 99, 80, 75]
+  aliases:
+    "tỷ": 1000000000
+    "triệu": 1000000
+    "nghìn": 1000
+
+comparative_markers_vi:
+  - "cao hơn"
+  - "thấp hơn"
+  - "tốt hơn"
+  - "kém hơn"
+  - "vượt trội"
+  - "dẫn đầu"
+  - "tốt nhất"
+  - "kém nhất"
+  - "hiệu quả hơn"
+  - "gấp"
+  - "nhất"
+  - "hơn hẳn"
+
+causal_markers_vi:
+  - "vì"
+  - "do"
+  - "dẫn đến"
+  - "khiến"
+  - "nhờ"
+  - "gây ra"
+  - "làm cho"
+
+correlation_phrases_vi:
+  - "tương quan"
+  - "liên quan"
+  - "đồng biến"
+  - "cùng chiều"
+  - "càng...càng"
+  - "phù hợp với"

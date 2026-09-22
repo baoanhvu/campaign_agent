@@ -1,0 +1,12 @@
+# config/playbooks/campaign_diagnosis.yml
+title: "Chẩn đoán chiến dịch"
+narrator_prompt: "narrate_campaign"
+metrics:
+  - { name: cpl }
+  - { name: cpa }
+  - { name: cac }
+  - { name: approval_rate }
+  - { name: disbursed_count }
+  - { name: disbursed_amount }
+  - { name: ad_spend }
+charts: []

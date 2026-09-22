@@ -1,0 +1,14 @@
+# config/playbooks/campaign_overview.yml
+title: "Tổng quan chiến dịch"
+narrator_prompt: "narrate_campaign"
+metrics:
+  - { name: reach_count }
+  - { name: registered_count }
+  - { name: approved_count }
+  - { name: disbursed_count }
+  - { name: disbursed_amount }
+  - { name: cpl }
+  - { name: cpa }
+  - { name: approval_rate }
+  - { name: avg_loan_value }
+charts: []

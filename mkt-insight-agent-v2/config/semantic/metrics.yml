@@ -1,0 +1,193 @@
+# config/semantic/metrics.yml — Metrics for new lending campaign schema
+# All metrics reference mart.funnel_daily (built by ETL from 8 raw tables).
+# {filter_clause} replaced by compiler with bind conditions (default TRUE).
+
+version: "2.0.0"
+
+metrics:
+  # ===== FUNNEL STEPS =====
+  - name: reach_count
+    label_vi: "Số lead tiếp cận"
+    unit: count
+    aggregate_only: true
+    sql_template: >
+      SELECT campaign_name, SUM(reach_count) AS reach_count
+      FROM mart.funnel_daily WHERE {filter_clause}
+      GROUP BY campaign_name ORDER BY reach_count DESC
+
+  - name: registered_count
+    label_vi: "Số hồ sơ đăng ký"
+    unit: count
+    aggregate_only: true
+    sql_template: >
+      SELECT campaign_name, SUM(registered_count) AS registered_count
+      FROM mart.funnel_daily WHERE {filter_clause}
+      GROUP BY campaign_name ORDER BY registered_count DESC
+
+  - name: approved_count
+    label_vi: "Số đơn được duyệt"
+    unit: count
+    aggregate_only: true
+    sql_template: >
+      SELECT campaign_name, SUM(approved_count) AS approved_count
+      FROM mart.funnel_daily WHERE {filter_clause}
+      GROUP BY campaign_name ORDER BY approved_count DESC
+
+  - name: disbursed_count
+    label_vi: "Số đơn giải ngân"
+    unit: count
+    aggregate_only: true
+    sql_template: >
+      SELECT campaign_name, SUM(disbursed_count) AS disbursed_count
+      FROM mart.funnel_daily WHERE {filter_clause}
+      GROUP BY campaign_name ORDER BY disbursed_count DESC
+
+  - name: disbursed_amount
+    label_vi: "Doanh số giải ngân"
+    unit: vnd
+    aggregate_only: true
+    sql_template: >
+      SELECT campaign_name, SUM(disbursed_amount) AS disbursed_amount
+      FROM mart.funnel_daily WHERE {filter_clause}
+      GROUP BY campaign_name ORDER BY disbursed_amount DESC
+
+  # ===== COST METRICS =====
+  - name: ad_spend
+    label_vi: "Chi phí lead"
+    unit: vnd
+    aggregate_only: true
+    sql_template: >
+      SELECT campaign_name, SUM(ad_spend) AS ad_spend
+      FROM mart.funnel_daily WHERE {filter_clause}
+      GROUP BY campaign_name ORDER BY ad_spend DESC
+
+  - name: cpl
+    label_vi: "Chi phí mỗi lead (CPL)"
+    unit: vnd
+    aggregate_only: true
+    caveat_vi: "CPL tăng không tự động là xấu — cần đối chiếu doanh số giải ngân."
+    sql_template: >
+      SELECT campaign_name, COALESCE(SUM(ad_spend) / NULLIF(SUM(reach_count), 0), 0) AS cpl
+      FROM mart.funnel_daily WHERE {filter_clause}
+      GROUP BY campaign_name ORDER BY cpl DESC
+
+  - name: cpa
+    label_vi: "Chi phí mỗi khoản giải ngân (CPA)"
+    unit: vnd
+    aggregate_only: true
+    sql_template: >
+      SELECT campaign_name, COALESCE(SUM(ad_spend) / NULLIF(SUM(disbursed_count), 0), 0) AS cpa
+      FROM mart.funnel_daily WHERE {filter_clause}
+      GROUP BY campaign_name ORDER BY cpa DESC
+
+  - name: cac
+    label_vi: "CAC (chi phí thu hút mỗi khoản)"
+    unit: vnd
+    aggregate_only: true
+    sql_template: >
+      SELECT campaign_name, COALESCE(SUM(disbursed_acq_cost) / NULLIF(SUM(disbursed_count), 0), 0) AS cac
+      FROM mart.funnel_daily WHERE {filter_clause}
+      GROUP BY campaign_name ORDER BY cac DESC
+
+  # ===== RATES =====
+  - name: approval_rate
+    label_vi: "Tỷ lệ duyệt đơn"
+    unit: ratio
+    aggregate_only: true
+    sql_template: >
+      SELECT campaign_name, COALESCE(SUM(approved_count) / NULLIF(SUM(registered_count), 0), 0) AS approval_rate
+      FROM mart.funnel_daily WHERE {filter_clause}
+      GROUP BY campaign_name ORDER BY approval_rate DESC
+
+  - name: avg_loan_value
+    label_vi: "Ticket size bình quân"
+    unit: vnd
+    aggregate_only: true
+    sql_template: >
+      SELECT campaign_name, COALESCE(SUM(disbursed_amount) / NULLIF(SUM(disbursed_count), 0), 0) AS avg_loan_value
+      FROM mart.funnel_daily WHERE {filter_clause}
+      GROUP BY campaign_name ORDER BY avg_loan_value DESC
+
+  # ===== SETTLEMENT =====
+  - name: settled_count
+    label_vi: "Số khoản tất toán"
+    unit: count
+    aggregate_only: true
+    sql_template: >
+      SELECT campaign_name, SUM(settled_count) AS settled_count
+      FROM mart.funnel_daily WHERE {filter_clause}
+      GROUP BY campaign_name ORDER BY settled_count DESC
+
+  - name: early_settlement_rate
+    label_vi: "Tỷ lệ tất toán sớm"
+    unit: ratio
+    aggregate_only: true
+    sql_template: >
+      SELECT campaign_name, COALESCE(SUM(early_settled_count) / NULLIF(SUM(settled_count), 0), 0) AS early_settlement_rate
+      FROM mart.funnel_daily WHERE {filter_clause}
+      GROUP BY campaign_name ORDER BY early_settlement_rate DESC
+
+  # ===== RE-LOAN =====
+  - name: avg_reloan_cadence_days
+    label_vi: "Chu kỳ tái vay (ngày)"
+    unit: count
+    aggregate_only: true
+    sql_template: >
+      SELECT campaign_name, AVG(avg_reloan_cadence_days) AS avg_reloan_cadence_days
+      FROM mart.funnel_daily WHERE avg_reloan_cadence_days IS NOT NULL AND {filter_clause}
+      GROUP BY campaign_name ORDER BY avg_reloan_cadence_days DESC
+
+  # ===== 7-DAY COMPARISON =====
+  - name: comparison_reach
+    label_vi: "So sánh số lead 7 ngày gần nhất vs 7 ngày trước"
+    unit: count
+    aggregate_only: true
+    sql_template: >
+      SELECT campaign_name,
+             SUM(CASE WHEN date >= (SELECT MAX(date) - 6 FROM mart.funnel_daily) THEN reach_count ELSE 0 END) AS reach_7d_recent,
+             SUM(CASE WHEN date >= (SELECT MAX(date) - 13 FROM mart.funnel_daily)
+                       AND date < (SELECT MAX(date) - 6 FROM mart.funnel_daily) THEN reach_count ELSE 0 END) AS reach_7d_prior
+      FROM mart.funnel_daily WHERE {filter_clause}
+      GROUP BY campaign_name ORDER BY reach_7d_recent DESC
+
+  - name: comparison_disbursed
+    label_vi: "So sánh doanh số giải ngân 7 ngày gần nhất vs 7 ngày trước"
+    unit: vnd
+    aggregate_only: true
+    sql_template: >
+      SELECT campaign_name,
+             SUM(CASE WHEN date >= (SELECT MAX(date) - 6 FROM mart.funnel_daily) THEN disbursed_amount ELSE 0 END) AS disbursed_7d_recent,
+             SUM(CASE WHEN date >= (SELECT MAX(date) - 13 FROM mart.funnel_daily)
+                       AND date < (SELECT MAX(date) - 6 FROM mart.funnel_daily) THEN disbursed_amount ELSE 0 END) AS disbursed_7d_prior
+      FROM mart.funnel_daily WHERE {filter_clause}
+      GROUP BY campaign_name ORDER BY disbursed_7d_recent DESC
+
+  - name: comparison_cpl
+    label_vi: "So sánh CPL 7 ngày gần nhất vs 7 ngày trước"
+    unit: vnd
+    aggregate_only: true
+    sql_template: >
+      SELECT campaign_name,
+             SUM(CASE WHEN date >= (SELECT MAX(date) - 6 FROM mart.funnel_daily) THEN ad_spend ELSE 0 END)
+             / NULLIF(SUM(CASE WHEN date >= (SELECT MAX(date) - 6 FROM mart.funnel_daily) THEN reach_count ELSE 0 END), 0) AS cpl_7d_recent,
+             SUM(CASE WHEN date >= (SELECT MAX(date) - 13 FROM mart.funnel_daily)
+                       AND date < (SELECT MAX(date) - 6 FROM mart.funnel_daily) THEN ad_spend ELSE 0 END)
+             / NULLIF(SUM(CASE WHEN date >= (SELECT MAX(date) - 13 FROM mart.funnel_daily)
+                       AND date < (SELECT MAX(date) - 6 FROM mart.funnel_daily) THEN reach_count ELSE 0 END), 0) AS cpl_7d_prior
+      FROM mart.funnel_daily WHERE {filter_clause}
+      GROUP BY campaign_name ORDER BY cpl_7d_recent DESC
+
+  - name: comparison_approval
+    label_vi: "So sánh tỷ lệ duyệt 7 ngày gần nhất vs 7 ngày trước"
+    unit: ratio
+    aggregate_only: true
+    sql_template: >
+      SELECT campaign_name,
+             SUM(CASE WHEN date >= (SELECT MAX(date) - 6 FROM mart.funnel_daily) THEN approved_count ELSE 0 END)
+             / NULLIF(SUM(CASE WHEN date >= (SELECT MAX(date) - 6 FROM mart.funnel_daily) THEN registered_count ELSE 0 END), 0) AS approval_7d_recent,
+             SUM(CASE WHEN date >= (SELECT MAX(date) - 13 FROM mart.funnel_daily)
+                       AND date < (SELECT MAX(date) - 6 FROM mart.funnel_daily) THEN approved_count ELSE 0 END)
+             / NULLIF(SUM(CASE WHEN date >= (SELECT MAX(date) - 13 FROM mart.funnel_daily)
+                       AND date < (SELECT MAX(date) - 6 FROM mart.funnel_daily) THEN registered_count ELSE 0 END), 0) AS approval_7d_prior
+      FROM mart.funnel_daily WHERE {filter_clause}
+      GROUP BY campaign_name ORDER BY approval_7d_recent DESC

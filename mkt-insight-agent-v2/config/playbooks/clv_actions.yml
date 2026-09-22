@@ -1,0 +1,11 @@
+# config/playbooks/clv_actions.yml
+title: "Hành động nâng cao CLV"
+narrator_prompt: "narrate_actions"
+metrics:
+  - { name: disbursed_count }
+  - { name: disbursed_amount }
+  - { name: cpl }
+  - { name: cpa }
+  - { name: cac }
+  - { name: avg_loan_value }
+charts: []

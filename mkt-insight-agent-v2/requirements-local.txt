@@ -1,0 +1,14 @@
+# requirements-local.txt — for local testing without AgentBase SDK
+fastapi
+uvicorn[standard]
+jinja2
+sse-starlette
+openai
+python-dotenv
+sqlalchemy>=2.0
+psycopg[binary]
+pandas
+openpyxl
+pydantic-settings
+pyyaml
+cachetools

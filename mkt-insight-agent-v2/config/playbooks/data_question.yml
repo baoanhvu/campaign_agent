@@ -1,0 +1,13 @@
+# config/playbooks/data_question.yml
+title: "Câu hỏi dữ liệu"
+narrator_prompt: "narrate_campaign"
+metrics:
+  - { name: reach_count }
+  - { name: registered_count }
+  - { name: approved_count }
+  - { name: disbursed_count }
+  - { name: disbursed_amount }
+  - { name: approval_rate }
+  - { name: cpl }
+  - { name: avg_loan_value }
+charts: []

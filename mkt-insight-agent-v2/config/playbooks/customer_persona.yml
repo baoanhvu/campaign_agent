@@ -1,0 +1,10 @@
+# config/playbooks/customer_persona.yml
+title: "Chân dung tập khách hàng"
+narrator_prompt: "narrate_persona"
+metrics:
+  - { name: disbursed_count }
+  - { name: disbursed_amount }
+  - { name: avg_loan_value }
+  - { name: avg_reloan_cadence_days }
+  - { name: early_settlement_rate }
+charts: []

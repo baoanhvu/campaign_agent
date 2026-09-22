@@ -1,0 +1,30 @@
+/* Marketing Dashboard — nav + shared styles */
+
+.top-nav {
+  display: flex;
+  gap: 4px;
+  background: #071524;
+  padding: 8px 16px;
+  align-items: center;
+}
+.nav-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #b9c9d8;
+  cursor: pointer;
+  padding: 8px 18px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+.nav-btn.active {
+  background: #12b8a6;
+  color: #fff;
+}
+.nav-btn:hover:not(.active) {
+  background: rgba(255,255,255,.08);
+}
+#app-root { min-height: 100vh; background: #eef3f8; }
+#page-dashboard > style { display: none; }

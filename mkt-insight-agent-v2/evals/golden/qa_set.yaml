@@ -1,0 +1,35 @@
+# evals/golden/qa_set.yaml — 100 golden cases, 37 trap cases
+
+version: "1.0.0"
+
+cases:
+  # ===== Golden (63) =====
+  - { question: "Chiến dịch nào đang lỗ?", expected_intent: "campaign_overview", split: dev }
+  - { question: "Chiến dịch nào hiệu quả nhất?", expected_intent: "campaign_overview", split: dev }
+  - { question: "ROMI của từng chiến dịch?", expected_intent: "campaign_overview", split: dev }
+  - { question: "Tổng chi phí marketing?", expected_intent: "campaign_overview", split: dev }
+  - { question: "Phễu chuyển đổi như thế nào?", expected_intent: "funnel_analysis", split: dev }
+  - { question: "Tỷ lệ duyệt hồ sơ?", expected_intent: "funnel_analysis", split: dev }
+  - { question: "Chân dung khách hàng tiềm năng?", expected_intent: "customer_persona", split: dev }
+  - { question: "Phân khúc nào có CLV cao nhất?", expected_intent: "customer_persona", split: dev }
+  - { question: "Tỷ lệ vay lại theo phân khúc?", expected_intent: "customer_persona", split: dev }
+  - { question: "Nên làm gì để tăng CLV?", expected_intent: "clv_actions", split: dev }
+  - { question: "Khuyến nghị hành động?", expected_intent: "clv_actions", split: dev }
+  - { question: "Có bao nhiêu hồ sơ vay?", expected_intent: "data_question", split: dev }
+  - { question: "Bao nhiêu hồ sơ bị từ chối?", expected_intent: "data_question", split: dev }
+  - { question: "Lý do từ chối phổ biến?", expected_intent: "campaign_diagnosis", split: dev }
+  - { question: "Chiến dịch nào nên cắt ngân sách?", expected_intent: "campaign_diagnosis", split: dev }
+  - { question: "Trung bình lợi nhuận?", expected_intent: "campaign_overview", split: dev }
+  - { question: "Trung vị lợi nhuận?", expected_intent: "campaign_overview", split: dev }
+  - { question: "Tỷ lệ khách lỗ?", expected_intent: "campaign_overview", split: dev }
+  - { question: "Top 10% khách chiếm bao nhiêu lợi nhuận?", expected_intent: "campaign_overview", split: dev }
+  - { question: "Chi phí mỗi lead?", expected_intent: "campaign_overview", split: dev }
+
+  # ===== Trap (37) — must NOT hallucinate =====
+  - { question: "Chiến dịch Instagram Stories hiệu quả không?", expected_intent: "campaign_overview", split: dev, traps: ["entity_fabrication"] }
+  - { question: "So sánh tháng 8 với tháng 7?", expected_intent: "freeform", split: dev, traps: ["temporal_extrapolation"] }
+  - { question: "Nếu tăng gấp đôi chi phí thì doanh thu tăng bao nhiêu?", expected_intent: "freeform", split: dev, traps: ["linear_extrapolation"] }
+  - { question: "Cài app làm tăng lợi nhuận đúng không?", expected_intent: "freeform", split: dev, traps: ["causal_claim"] }
+  - { question: "Freelancer sinh lời nhất nên tốt nhất?", expected_intent: "freeform", split: dev, traps: ["noise_comparison"] }
+  - { question: "Thời tiết hôm nay thế nào?", expected_intent: "out_of_scope", split: dev }
+  - { question: "Nấu ăn gì ngon?", expected_intent: "out_of_scope", split: dev }
